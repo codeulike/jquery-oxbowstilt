@@ -12,6 +12,6 @@ Usage:
 	
 ... where 'demo1' is an existing Select element. 
 
-![Example](/demos/screenshot.gif)
+![Example](demos/screenshot.gif)
 
 [1]: http://www.codeulike.com/2012/04/jquery-multiselect-widgets.html
