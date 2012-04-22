@@ -1,0 +1,30 @@
+body
+{
+	font: 12px normal Verdana, sans-serif;
+	background-color: #F3F3FF;
+}
+
+.pagewrap
+{
+	width: 960px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.header 
+{
+	background-color: light-blue;
+	border: solid 5px silver;
+	width: 100%;
+	padding: 20px 20px 20px 20px;
+	background-color: #FFFFFF;
+	margin: 0 0 20px 0;
+}
+
+.demo
+{
+	padding: 25px 25px 25px 25px;	
+	background-color: #FFFFFF;
+	margin: 20px 0 20px 0;
+	width: 100%;
+}
