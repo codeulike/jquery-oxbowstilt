@@ -6,7 +6,7 @@ There are already [lots][1] of very good jQuery multi-select widgets around; how
 is to work well in browsers with slow javascript (such as IE7, IE8) but when large numbers of items need to be shown.
 For that reason, OxbowStilt aims to make minimal changes to the DOM.
 
-* OxbowStilt is an anagram of 'two list box'
+\* OxbowStilt is an anagram of 'two list box'
 
 Usage:
 
