@@ -28,24 +28,22 @@
             onUnchoose: null
         },
         _ie7: false,
+		_useExistingSelects: false,
 
         _create: function() {
-            this.element.hide();
-
-            this.listContainer = $("<div />").addClass("ui-oxbowstilt-container").insertAfter(this.element);
-            this.chosenWrapper = $("<div />").addClass("ui-oxbowstilt-listwrap").appendTo(this.listContainer);
-            this.chosenLabel = $("<span>" + this.options.chosenLabel + "</span>").addClass("ui-oxbowstilt-listheader").appendTo(this.chosenWrapper);
-            this.chosenList = $("<select multiple=\"multiple\" size=\"10\" \>").addClass("ui-oxbowstilt-list").appendTo(this.chosenWrapper);
-            this.chosenList.width(this.options.listWidth).height(this.options.height);
-            this.middleBit = $("<div />").addClass("ui-oxbowstilt-middle").appendTo(this.listContainer);
-            this.unchosenWrapper = $("<div />").addClass("ui-oxbowstilt-listwrap").appendTo(this.listContainer);
-            this.unchosenLabel = $("<span>" + this.options.unchosenLabel + "</span>").addClass("ui-oxbowstilt-listheader").appendTo(this.unchosenWrapper);
-            this.unchosenList = $("<select multiple=\"multiple\" size=\"10\" \>").addClass("ui-oxbowstilt-list").appendTo(this.unchosenWrapper);
-            this.unchosenList.width(this.options.listWidth).height(this.options.height);
-            this.clearDiv = $("<div />").addClass("ui-helper-clearfix").appendTo(this.listContainer);
-            this.chooseButton = $("<button type=\"button\" >&lt;</button>").addClass("ui-oxbowstilt-button").appendTo(this.middleBit).button();
-            this.unchooseButton = $("<button type=\"button\" >&gt;</button>").addClass("ui-oxbowstilt-button").appendTo(this.middleBit).button();
-
+			if (this.element.is("div"))
+			{
+				this.listContainer = this.element;
+				this.chosenList = $(this.element.find("select")[0]);
+				this.unchosenList = $(this.element.find("select")[1]);
+				this._useExistingSelects = (this.chosenList && this.unchosenList);
+			}
+			
+			if (this._useExistingSelects)
+				this._createFromExistingSelects();
+			else
+				this._createFromScratch();
+            
             var self = this;
             this.chooseButton.click(function() { self._chooseSelected(); });
             this.unchooseButton.click(function() { self._unchooseSelected(); });
@@ -61,8 +59,50 @@
             }
             this.refresh();
         },
+		_createFromScratch: function () {
+		
+			this.element.hide();
+			
+            this.listContainer = $("<div />").addClass("ui-oxbowstilt-container").insertAfter(this.element);
+            this.chosenWrapper = $("<div />").addClass("ui-oxbowstilt-listwrap").appendTo(this.listContainer);
+            this.chosenLabel = $("<span>" + this.options.chosenLabel + "</span>").addClass("ui-oxbowstilt-listheader").appendTo(this.chosenWrapper);
+            this.chosenList = $("<select multiple=\"multiple\" size=\"10\" \>").addClass("ui-oxbowstilt-list").appendTo(this.chosenWrapper);
+            this.chosenList.width(this.options.listWidth).height(this.options.height);
+            this.middleBit = $("<div />").addClass("ui-oxbowstilt-middle").appendTo(this.listContainer);
+            this.unchosenWrapper = $("<div />").addClass("ui-oxbowstilt-listwrap").appendTo(this.listContainer);
+            this.unchosenLabel = $("<span>" + this.options.unchosenLabel + "</span>").addClass("ui-oxbowstilt-listheader").appendTo(this.unchosenWrapper);
+            this.unchosenList = $("<select multiple=\"multiple\" size=\"10\" \>").addClass("ui-oxbowstilt-list").appendTo(this.unchosenWrapper);
+            this.unchosenList.width(this.options.listWidth).height(this.options.height);
+            this.clearDiv = $("<div />").addClass("ui-helper-clearfix").appendTo(this.listContainer);
+            this.chooseButton = $("<button type=\"button\" >&lt;</button>").addClass("ui-oxbowstilt-button").appendTo(this.middleBit).button();
+            this.unchooseButton = $("<button type=\"button\" >&gt;</button>").addClass("ui-oxbowstilt-button").appendTo(this.middleBit).button();
+		
+		},
+		_createFromExistingSelects: function () {
+			// listcontainer already exists, just need to add class
+			this.listContainer.addClass("ui-oxbowstilt-container");
+			this.chosenList.wrap("<div />");
+            this.chosenWrapper =  this.chosenList.parent().addClass("ui-oxbowstilt-listwrap");
+            this.chosenLabel = $("<span>" + this.options.chosenLabel + "</span>").addClass("ui-oxbowstilt-listheader").prependTo(this.chosenWrapper);
+            this.chosenList.addClass("ui-oxbowstilt-list");
+            this.chosenList.width(this.options.listWidth).height(this.options.height);
+            $("<div />").addClass("ui-oxbowstilt-middle").insertAfter(this.chosenWrapper);
+			this.middleBit = this.chosenWrapper.next();
+			
+			this.unchosenList.wrap("<div />");
+            this.unchosenWrapper = this.unchosenList.parent().addClass("ui-oxbowstilt-listwrap");
+            this.unchosenLabel = $("<span>" + this.options.unchosenLabel + "</span>").addClass("ui-oxbowstilt-listheader").prependTo(this.unchosenWrapper);
+            this.unchosenList.addClass("ui-oxbowstilt-list");
+            this.unchosenList.width(this.options.listWidth).height(this.options.height);
+            this.clearDiv = $("<div />").addClass("ui-helper-clearfix").appendTo(this.listContainer);
+            this.chooseButton = $("<button type=\"button\" >&lt;</button>").addClass("ui-oxbowstilt-button").appendTo(this.middleBit).button();
+            this.unchooseButton = $("<button type=\"button\" >&gt;</button>").addClass("ui-oxbowstilt-button").appendTo(this.middleBit).button();
+		
+		},
 
         refresh: function() {
+			if (this._useExistingSelects)
+				return;
             var chosenOps = [];
             var unchosenOps = [];
             this.element.find('option').each(function(i) {
@@ -98,7 +138,8 @@
             }
             for (i = 0; i < chooseList.length; i++) {
                 this._moveItem(chooseList[i], this.unchosenList, this.chosenList);
-                this._updateOriginalItem(chooseList[i], true);
+				if (!this._useExistingSelects)
+					this._updateOriginalItem(chooseList[i], true);
             }
             if (this._ie7) {
                 this.chosenList.show();
@@ -117,7 +158,8 @@
             }
             for (i = 0; i < unchooseList.length; i++) {
                 this._moveItem(unchooseList[i], this.chosenList, this.unchosenList);
-                this._updateOriginalItem(unchooseList[i], false);
+				if (!this._useExistingSelects)
+					this._updateOriginalItem(unchooseList[i], false);
             }
             if (this._ie7) {
                 this.chosenList.show();
@@ -148,8 +190,23 @@
             // remove classes + data
             $.Widget.prototype.destroy.call(this);
 
-            this.listContainer.remove();
-            this.element.show();
+			if (this._useExistingSelects)
+			{
+				this.middleBit.remove();
+				this.clearDiv.remove();
+				this.unchosenList.removeClass("ui-oxbowstilt-list");
+				this.unchosenLabel.remove();
+				this.unchosenList.unwrap();
+				this.chosenList.removeClass("ui-oxbowstilt-list");
+				this.chosenLabel.remove();
+				this.chosenList.unwrap();
+				this.listContainer.removeClass("ui-oxbowstilt-container");
+			}
+			else
+			{
+				this.listContainer.remove();
+				this.element.show();
+			}
 
             return this;
         }
