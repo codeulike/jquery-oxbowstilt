@@ -1,5 +1,5 @@
 ﻿/*
-* jQuery Oxbowstilt Widget 0.8
+* jQuery Oxbowstilt Widget 0.9
 * A low-fi dual-listbox multiselect widget
 * Copyright (c) 2012 Ian Richardson
 *
@@ -45,17 +45,17 @@
 				this._createFromScratch();
             
             var self = this;
-            this.chooseButton.click(function() { self._chooseSelected(); });
-            this.unchooseButton.click(function() { self._unchooseSelected(); });
-            this.unchosenList.dblclick(function() { self._chooseSelected(); });
-            this.chosenList.dblclick(function() { self._unchooseSelected(); });
+            this.chooseButton.bind("click.oxbowstilt", function() { self._chooseSelected(); });
+            this.unchooseButton.bind("click.oxbowstilt", function() { self._unchooseSelected(); });
+            this.unchosenList.bind("dblclick.oxbowstilt", function() { self._chooseSelected(); });
+            this.chosenList.bind("dblclick.oxbowstilt", function() { self._unchooseSelected(); });
             this._ie7 = (jQuery.browser.msie && jQuery.browser.version < 8);
             var ie8orEarlier = (jQuery.browser.msie && jQuery.browser.version < 9);
             if (ie8orEarlier) {
                 // prevent bubble of mousedown events on selects
                 // see jquery ui bug #6644 http://bugs.jqueryui.com/ticket/6644
-                this.unchosenList.bind('mousedown', false);
-                this.chosenList.bind('mousedown', false);
+                this.unchosenList.bind('mousedown.oxbowstilt', false);
+                this.chosenList.bind('mousedown.oxbowstilt', false);
             }
             this.refresh();
         },
@@ -201,6 +201,9 @@
 				this.chosenLabel.remove();
 				this.chosenList.unwrap();
 				this.listContainer.removeClass("ui-oxbowstilt-container");
+				
+				this.unchosenList.unbind(".oxbowstilt");
+				this.chosenList.unbind(".oxbowstilt");
 			}
 			else
 			{
